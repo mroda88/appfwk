@@ -71,9 +71,10 @@ public:
    * @return Value popped from the Queue
    *
    * This is a pure virtual function
-   * If pop takes longer than the timeout, implementations should throw an exception
-  */
-  virtual T pop(const duration_type& timeout) = 0;
+   * If pop takes longer than the timeout, implementations should throw an
+   * exception
+   */
+  virtual bool pop(T& val, const duration_type& timeout) = 0;
 
 
   /**

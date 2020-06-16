@@ -88,13 +88,8 @@ dunedaq::appfwk::FanOutDAQModule<ValueType>::do_work()
   while (thread_.thread_running()) {
     if (inputQueue_->can_pop()) {
 
-      try {
-        data_ptr = std::make_unique<ValueType>(inputQueue_->pop(queueTimeout_));
-      } catch (const std::runtime_error& err) {
-        TLOG(TLVL_WARNING) << get_name()
-                           << ": Tried but failed to pop a value from an "
-                              "inputQueue (exception is \""
-                           << err.what() << "\")";
+      if (!inputQueue_->pop(*data_ptr, queueTimeout_)) {
+        TLOG(TLVL_WARNING) << get_name() << ": Tried but failed to pop a value from an inputQueue";
         continue;
       }
       

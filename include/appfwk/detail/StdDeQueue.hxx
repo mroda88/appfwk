@@ -38,8 +38,8 @@ StdDeQueue<T>::push(value_type&& object_to_push, const duration_type& timeout)
 }
 
 template<class T>
-T
-StdDeQueue<T>::pop(const duration_type& timeout)
+bool
+StdDeQueue<T>::pop(T& val, const duration_type& timeout)
 {
 
   auto starttime = std::chrono::steady_clock::now();
@@ -54,19 +54,17 @@ StdDeQueue<T>::pop(const duration_type& timeout)
   }
 
   if (this->can_pop()) {
-    T obj(std::move(fDeque.front()));
+    val = std::move(fDeque.front());
     fDeque.pop_front();
     fSize--;
     fNoLongerFull.notify_one();
-    return obj;
+    return true;
   } else {
     std::stringstream errmsg;
-    errmsg
-      << "In StdDeQueue::pop_wait_for: unable to pop since queue is "
-         "empty (timeout period was "
-      << std::chrono::duration_cast<std::chrono::milliseconds>(timeout).count()
-      << " milliseconds)";
-    throw std::runtime_error(errmsg.str());
+    errmsg << "In StdDeQueue::pop_wait_for: unable to pop since queue is "
+              "empty (timeout period was "
+           << std::chrono::duration_cast<std::chrono::milliseconds>(timeout).count() << " milliseconds)";
+    return false;
   }
 }
 
